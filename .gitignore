@@ -45,3 +45,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+*.zip
+final/
+*.RData
+.Rhistory
+*.html
+Capstone_MR_cache/*
+Capstone_MR_files/*
+figure/*
