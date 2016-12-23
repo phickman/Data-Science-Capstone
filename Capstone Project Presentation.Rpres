@@ -1,0 +1,43 @@
+Introduction
+========================================================
+
+The goal of this exercise is to "pitch" your data product to your boss or an investor.  5 slide max
+
+
+For more details on authoring R presentations please visit <https://support.rstudio.com/hc/en-us/articles/200486468>.
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+
+Data
+========================================================
+
+Data sources and what %
+
+
+Prediction Model
+========================================================
+
+How can you briefly explain how your predictive model works?
+
+https://en.wikipedia.org/wiki/Katz%27s_back-off_model
+
+http://www.aclweb.org/anthology/D07-1090.pdf
+
+How can you efficiently store an n-gram model (think Markov Chains)?
+How can you use the knowledge about word frequencies to make your model smaller and more efficient?
+How many parameters do you need (i.e. how big is n in your n-gram model)?
+Can you think of simple ways to "smooth" the probabilities (think about giving all n-grams a non-zero probability even if they aren't observed in the data) ?
+How do you evaluate whether your model is any good?
+How can you use backoff models to estimate the probability of unobserved n-grams?
+
+
+Performance
+========================================================
+
+How can you succinctly quantitatively summarize the performance of your prediction algorithm?
+
+There will likely be a tradeoff that you have to make in between size and runtime. For example, an algorithm that requires a lot of memory, may run faster, while a slower algorithm may require less memory. You will have to find the right balance between the two in order to provide a good experience to the user.
+
