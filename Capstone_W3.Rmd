@@ -1,0 +1,149 @@
+The goal of this exercise is to build and evaluate your first predictive model. You will use the n-gram and backoff models you built in previous tasks to build and evaluate your predictive model. The goal is to make the model efficient and accurate.
+
+Tasks to accomplish
+
+1. Build a predictive model based on the previous data modeling steps - you may combine the models in any way you think is appropriate.
+2. Evaluate the model for efficiency and accuracy - use timing software to evaluate the computational complexity of your model. Evaluate the model accuracy using different metrics like perplexity, accuracy at the first word, second word, and third word.
+
+Questions to consider
+
+1. How does the model perform for different choices of the parameters and size of the model?
+2. How much does the model slow down for the performance you gain?
+3. Does perplexity correlate with the other measures of accuracy?
+4. Can you reduce the size of the model (number of parameters) without reducing performance?
+
+```{r}
+####10. Implementing Stupid Back-off
+#The code below shows a basic implementation of the Stupid Backoff algorithm.
+
+#The algorithm is then tested against a number of questions based on the assessment Quiz sets.
+
+for(package in c("tm", "NLP")) {
+  if(!require(package, character.only = TRUE)) {
+    install.packages(package)
+    library(package, character.only = TRUE)
+  }
+}
+
+load(file = "data/df_uniwordfreq.RData")
+load(file = "data/df_biwordfreq.RData")
+load(file = "data/df_triwordfreq.RData")
+load(file = "data/df_quadwordfreq.RData")
+load(file = "data/df_pentwordfreq.RData")
+
+
+predict <- function(input) {
+  x <- input
+  x <- removePunctuation(x)
+  x <- removeNumbers(x)
+  x <- tolower(x)
+  x <- stripWhitespace(x)
+  x <- unlist(strsplit(x , " "))
+  
+  for(i in min(length(x), 3):1) {
+    y <- NA
+    match <- NA
+    ngram <- paste(tail(x, i), collapse = " ")
+    ngram <- paste0("^", ngram, " ")
+    if(i == 3) {
+      match <- grep(ngram, df_quadwordfreq$ngram)[1]
+      y <- df_quadwordfreq[match, 1]
+    } else if(i == 2) { 
+      match <- grep(ngram, df_triwordfreq$ngram)[1]
+      y <- df_triwordfreq[match, 1]
+    } else if(i == 1) { 
+      match <- grep(ngram, df_biwordfreq$ngram)[1]
+      y <- df_biwordfreq[match, 1]
+    }
+    if(!is.na(y)) {
+      return(gsub(ngram, "", y))
+      break
+    }
+  }
+  
+  return(paste0(df_uniwordfreq[1, 1]))
+}
+
+
+quiz11 <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+quiz12 <- c("The guy in front of me just bought a pound of bacon, a bouquet, and a case of",
+            "You're the reason why I smile everyday. Can you follow me please? It would mean the",
+            "Hey sunshine, can you follow me and make me the",
+            "Very early observations on the Bills game: Offense still struggling but the",
+            "Go on a romantic date at the",
+            "Well I'm pretty sure my granny has some old bagpipes in her garage I'll dust them off and be on my",
+            "Ohhhhh #PointBreak is on tomorrow. Love that film and haven't seen it in quite some",
+            "After the ice bucket challenge Louis will push his long wet hair out of his eyes with his little",
+            "Be grateful for the good times and keep the faith during the",
+            "If this isn't the cutest thing you've ever seen, then you must be")
+quiz13 <- c("beer",
+            "world",
+            "happiest",
+            "defense",
+            "beach",
+            "way",
+            "time",
+            "fingers",
+            "bad",
+            "insane")
+
+df_quiz1 <- data.frame(quiz11, quiz12, quiz13, quiz14 = character(10), stringsAsFactors = FALSE)
+
+rm(quiz11, quiz12, quiz13)
+
+i <- 0
+j <- 0
+for(row in 1:nrow(df_quiz1)) {
+  i <- i + 1
+  q <- df_quiz1[i, 2]
+  a <- df_quiz1[i, 3]
+  p <- predict(q)
+  df_quiz1[i, 4] <- p
+  if(p == a) {j <- j + 1}
+}
+print(paste0("score: ", j/10))
+
+rm(i, j, q, a, p)
+
+
+quiz21 <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+quiz22 <- c("When you breathe, I want to be the air for you. I'll be there for you, I'd live and I'd",
+            "Guy at my table's wife got up to go to the bathroom and I asked about dessert and he started telling me about his",
+            "I'd give anything to see arctic monkeys this",
+            "Talking to your mom has the same effect as a hug and helps reduce your",
+            "When you were in Holland you were like 1 inch away from me but you hadn't time to take a",
+            "I'd just like all of these questions answered, a presentation of evidence, and a jury to settle the",
+            "I can't deal with unsymetrical things. I can't even hold an uneven number of bags of groceries in each",
+            "Every inch of you is perfect from the bottom to the",
+            "I'm thankful my childhood was filled with imagination and bruises from playing",
+            "I like how the same people are in almost all of Adam Sandler's")
+quiz23 <- c("die",
+            "marital",
+            "weekend",
+            "stress",
+            "picture",
+            "matter",
+            "hand",
+            "top",
+            "outside",
+            "movies")
+
+df_quiz2 <- data.frame(quiz21, quiz22, quiz23, quiz24 = character(10), stringsAsFactors = FALSE)
+
+rm(quiz21, quiz22, quiz23)
+
+i <- 0
+j <- 0
+for(row in 1:nrow(df_quiz2)) {
+  i <- i + 1
+  q <- df_quiz2[i, 2]
+  a <- df_quiz2[i, 3]
+  p <- predict(q)
+  df_quiz2[i, 4] <- p
+  if(p == a) {j <- j + 1}
+}
+print(paste0("score: ", j/10))
+
+rm(i, j, q, a, p)
+
+```

@@ -23,8 +23,8 @@ The analysis uses data from news headlines, blog entries, and tweets.  Only the 
 
 
 ```{r echo=FALSE}
-setwd('C:/Users/phickma/Desktop/GitHub/Data Science Capstone/')
-#setwd('C:/Users/paul_/Documents/Code/Capstone')
+#setwd("C:/Users/phickma/Desktop/GitHub/Data Science Capstone")
+setwd('C:/Users/paul_/Documents/Code/Data-Science-Capstone')
 
 # load the required libraries
 for(package in c("tm", "NLP", "stringr", "RWeka", "colorspace", "ggplot2", "knitr","rmarkdown", "slam", "ggplot2")) {
@@ -142,6 +142,8 @@ ggplot(
     theme(axis.text.x = element_text(angle = 45))
 ```
 ```{r echo=FALSE}
+# save the word frequency for later
+save(uniword.freq_data, file = "data/uniword.freq_data.RData")
 rm(unigram.tokenizer, unigram.tdm, unigram.freq, uniword.freq_data)
 ```
 
@@ -166,6 +168,8 @@ ggplot(
     theme(axis.text.x = element_text(angle = 45))
 ```
 ```{r echo=FALSE}
+# save the word frequency for later
+save(biword.freq_data, file = "data/biword.freq_data.RData")
 rm(bigram.tokenizer, bigram.tdm, bigram.freq, biword.freq_data)
 ```
 
@@ -190,7 +194,35 @@ ggplot(
     theme(axis.text.x = element_text(angle = 90))
 ```
 ```{r echo=FALSE}
+# save the word frequency for later
+save(triword.freq_data, file = "data/triword.freq_data.RData")
 rm(trigram.tokenizer, trigram.tdm, trigram.freq, triword.freq_data)
+```
+
+## Quad-grams
+
+```{r}
+quadgram.tokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 4, max = 4))
+quadgram.tdm <- TermDocumentMatrix(all.docs, control = list(tokenize = quadgram.tokenizer))
+
+quadgram.freq <- rowapply_simple_triplet_matrix(quadgram.tdm, sum)
+quadword.freq_data <- data.frame(ngram = names(quadgram.freq), freq = quadgram.freq, row.names = NULL, stringsAsFactors = FALSE)
+quadword.freq_data <- quadword.freq_data[with(quadword.freq_data, order(-freq, ngram)), ]
+
+ggplot(
+    head(quadword.freq_data, 20), 
+    aes(x = reorder(ngram,freq,function(x) -x), freq)
+    ) + 
+    geom_bar(stat='identity', fill="steelblue") + 
+    geom_text(aes(label=freq), vjust=1.6, color="white", size=3) +
+    ggtitle("Top 20 quadgrams") +
+    xlab("n-gram") + ylab("Frequency") +
+    theme(axis.text.x = element_text(angle = 90))
+```
+```{r echo=FALSE}
+# save the word frequency for later
+save(quadword.freq_data, file = "data/quadword.freq_data.RData")
+rm(quadgram.tokenizer, quadgram.tdm, quadgram.freq, quadword.freq_data)
 ```
 
 # Summary
